@@ -3,7 +3,7 @@ import mlflow
 import mlflow.sklearn
 import joblib
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_wine
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -16,17 +16,18 @@ os.makedirs("results", exist_ok=True)
 
 # Configure MLflow tracking
 mlflow.set_tracking_uri("http://127.0.0.1:5000/")
-mlflow.set_experiment("First Experiment")
+mlflow.set_experiment("MLOPS")
+X, y = load_wine(return_X_y=True)
 
 # Load dataset
-X, y = load_iris(return_X_y=True)
+X, y = load_wine(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Define models
 models = {
     "LogisticRegression": LogisticRegression(max_iter=200),
-    "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42),
-    "SVM": SVC(kernel="linear", probability=True)
+    "RandomForest": RandomForestClassifier(n_estimators=50, random_state=42),
+    "SVM": SVC(kernel="rbf", probability=True)
 }
 
 # Track best model
@@ -83,5 +84,5 @@ if best_model:
     mlflow.sklearn.log_model(
         best_model,
         artifact_path="best_model",
-        registered_model_name="IrisBestModel"
+        registered_model_name="WineBestModel"
     )
