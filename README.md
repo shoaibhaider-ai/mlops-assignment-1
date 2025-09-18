@@ -9,6 +9,7 @@ The objective of this assignment is to:
 
 ---
 ## 📂 Project Structure
+```
 mlops-assignment-1/  
 ├── data/  
 ├── notebooks/  
@@ -23,7 +24,7 @@ mlops-assignment-1/
 ├── requirements.txt  
 ├── README.md  
 
-
+```
 ---
 
 ## 📊 Dataset
@@ -92,6 +93,19 @@ We used MLflow to log:
 ## 🛠 How to Run the Project
 
 ### 1. Clone Repository
-```bash
+```
 git clone https://github.com/shoaibhaider-ai/mlops-assignment-1.git
 cd mlops-assignment-1
+```
+### 2. Install Requirements
+````
+pip install -r requirements.txt
+````
+### 3.Start MlFlow UI
+````
+python -m mlflow ui 
+````
+### 4.Run Training Script
+````
+python src/train_with_mlflow.py
+````
