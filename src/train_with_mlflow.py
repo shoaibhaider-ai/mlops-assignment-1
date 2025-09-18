@@ -15,8 +15,8 @@ os.makedirs("models", exist_ok=True)
 os.makedirs("results", exist_ok=True)
 
 # Configure MLflow tracking
-mlflow.set_tracking_uri("http://127.0.0.1:5000/")   # MLflow server URI
-mlflow.set_experiment("First Assignment")           # Experiment name
+mlflow.set_tracking_uri("http://127.0.0.1:5000/")
+mlflow.set_experiment("First Experiment")
 
 # Load dataset
 X, y = load_iris(return_X_y=True)
@@ -28,6 +28,11 @@ models = {
     "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42),
     "SVM": SVC(kernel="linear", probability=True)
 }
+
+# Track best model
+best_model = None
+best_score = -1
+best_name = ""
 
 for name, model in models.items():
     with mlflow.start_run(run_name=name):
@@ -51,7 +56,7 @@ for name, model in models.items():
         mlflow.log_metric("recall", rec)
         mlflow.log_metric("f1", f1)
 
-        # Save model and log as artifact
+        # Save model artifact
         model_path = f"models/{name}.pkl"
         joblib.dump(model, model_path)
         mlflow.log_artifact(model_path, artifact_path="models")
@@ -65,3 +70,18 @@ for name, model in models.items():
         mlflow.log_artifact(cm_path, artifact_path="confusion_matrices")
 
         print(f"\n{name} logged to MLflow with Accuracy: {acc:.4f}")
+
+        # Track best model by F1-score
+        if f1 > best_score:
+            best_score = f1
+            best_model = model
+            best_name = name
+
+# 🔹 After loop: Register best model in MLflow registry
+if best_model:
+    print(f"\nBest Model: {best_name} with F1 = {best_score:.4f}")
+    mlflow.sklearn.log_model(
+        best_model,
+        artifact_path="best_model",
+        registered_model_name="IrisBestModel"
+    )
